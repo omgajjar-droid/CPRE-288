@@ -7,6 +7,7 @@
 #include "lcd.h"
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stddef.h>
 
 void cyBot_sendString(char *input) {
  while(*input != '\0') {
@@ -14,56 +15,62 @@ void cyBot_sendString(char *input) {
         input++;
     }
 }
+float avgDistance(int i, cyBOT_Scan_t *scan_data) {
+    float sum = 0;
+   while(i<=6){
+   cyBOT_Scan(i, scan_data);
+   sum += scan_data -> sound_dist;
+   i++;
+   }
+   return sum / 6;
+}
 
-//    void objectFinder(int objValue){
-//        int i;
-//        while
-//        it j;
-//        int objectList[];
-//        int arrLength = sizeof(objectList);
-        //for (i = 0; i < arrLength; i++){
-            //for (j = i+1; j <arrLength; j++){
-//        }
-//
-//        }
-//
-//    }
+    void detectObject(cyBOT_Scan_t *getScan){
+        int angle = 0;
 
+        float smallestAngle = 0;
 
-    void detectObject(){
-        char buffer[100];
+        float smallestWidth = 99999;
+        float width;
+        int objCounter = 0;
+        int objDetected = 0;
+        cyBOT_Scan(0, getScan);
+        float lastDistance =  avgDistance(0, getScan);
+        while(angle <= 180) {
 
-       cyBOT_Scan_t *getScan = calloc(1, sizeof(cyBOT_Scan_t));
-        int i = 0;
-//        int objDetected = 0;
-        int width =0;
-        int widthEnd =0;
-        int avg = 0;
-        while(i <= 180) {
-            if(cyBot_getByte() == 'm') {
-            cyBOT_Scan(i, getScan);
+            if(cyBot_getByte() == 'm'){
+                cyBOT_Scan(angle, getScan);
+                float current = getScan->sound_dist;
+                   if(objDetected == 1) {
+                       //object done detecting
+                       if(current > lastDistance + 10) {
+                           objDetected = 0;
+                           float centreAngle = (angle - width / 2);
+                           char buffer[100];
+                           //object number centre angle distance width
+                           sprintf(buffer, "obj number: %d \r \t Angle: %f \t Distance: %f \t Width:%f \t\n", objCounter, centreAngle, lastDistance, width);
+                           cyBot_sendString(buffer);
+                           if(width < smallestWidth){
+                               smallestWidth = width;
+                               smallestAngle = centreAngle + 0.5;
+                           }
 
+                       }
 
-                sprintf(buffer, "%d \r %f \t \n" , i, getScan->sound_dist);
-                cyBot_sendString(buffer);
-
-
-                if (getScan->sound_dist < 30){
-//                    objDetected = 1;
-                    width = i;
-                    if (getScan->sound_dist > 30){
-                        widthEnd = i;
-                        avg = widthEnd - width;
-                    }
+                    width +=2;
                 }
-                //objValue(avg);
+                   else if(current < lastDistance + 10){
+                       objDetected = 1;
+                       objCounter ++;
+                       width = 0;
+                   }
+
+            angle +=3;
+            lastDistance = current;
+        }
 
         }
-            i +=2;
-        }
-
-        lcd_printf("%d", avg);
-        cyBot_sendString("Object was d");
+        cyBOT_Scan(smallestAngle, getScan);
         return;
     }
 
@@ -100,10 +107,11 @@ int main(void) {
     lcd_init();
     cyBot_uart_init();
     cyBOT_init_Scan(0b0011);
-    right_calibration_value = 169750;
-     left_calibration_value = 1309000;
+    right_calibration_value = 106750;
+     left_calibration_value = 1408750;
 //     cyBOT_SERVO_cal();
-     detectObject();
+     cyBOT_Scan_t *getScan = calloc(1, sizeof(cyBOT_Scan_t));
+     detectObject(getScan);
 //     char buffer[100];
 //
 //    cyBOT_Scan_t *getScan = calloc(1, sizeof(cyBOT_Scan_t));
