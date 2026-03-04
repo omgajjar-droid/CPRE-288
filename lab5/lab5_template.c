@@ -30,33 +30,42 @@ int main(void) {
 	timer_init(); // Must be called before lcd_init(), which uses timer functions
 	lcd_init();
 
-  // initialize the cyBot UART1 before trying to use it
+	char data;
 
-  // (Uncomment ME for UART init part of lab)
-	// cyBot_uart_init_clean();  // Clean UART1 initialization, before running your UART1 GPIO init code
 
-	// Complete this code for configuring the GPIO PORTB part of UART1 initialization (your UART1 GPIO init code)
-     // SYSCTL_RCGCGPIO_R |= FIXME;
-	   // while ((SYSCTL_PRGPIO_R & FIXME) == 0) {};
-		 // GPIO_PORTB_DEN_R |= FIXME;
-		 // GPIO_PORTB_AFSEL_R |= FIXME;
-     // GPIO_PORTB_PCTL_R &= FIXME;     // Force 0's in the desired locations
-     // GPIO_PORTB_PCTL_R |= FIXME;     // Force 1's in the desired locations
-		 // Or see the notes for a coding alternative to assign a value to the PCTL field
+  initialize the cyBot UART1 before trying to use it
 
-    // (Uncomment ME for UART init part of lab)
-		// cyBot_uart_init_last_half();  // Complete the UART device configuration
+  (Uncomment ME for UART init part of lab)
+	cyBot_uart_init_clean();  // Clean UART1 initialization, before running your UART1 GPIO init code
 
-		// Initialize the scan
-	  // cyBOT_init_Scan();
-		// Remember servo calibration function and variables from Lab 3
+	Complete this code for configuring the GPIO PORTB part of UART1 initialization (your UART1 GPIO init code)
+     SYSCTL_RCGCGPIO_R |= 0x02;
+	   while ((SYSCTL_PRGPIO_R & 0x02) == 0) {};
+		 GPIO_PORTB_DEN_R |= 0x03E;
+		 GPIO_PORTB_AFSEL_R |= 0x03;
+     GPIO_PORTB_PCTL_R &= ~0x000000FF;     // Force 0's in the desired locations
+     GPIO_PORTB_PCTL_R |=  0x00000011;     // Force 1's in the desired locations
+		 Or see the notes for a coding alternative to assign a value to the PCTL field
+
+    (Uncomment ME for UART init part of lab)
+		cyBot_uart_init_last_half();  // Complete the UART device configuration
+
+		Initialize the scan
+	  cyBOT_init_Scan();
+		Remember servo calibration function and variables from Lab 3
 
 	// YOUR CODE HERE
 
 	while(1)
 	{
+		data = cyBot_getByte();
 
-      // YOUR CODE HERE
+		cyBot_sendByte(data);
+
+		if(data == '\r'){
+			cyBot_sendByte('\n');
+		}
+      
 
 
 	}
