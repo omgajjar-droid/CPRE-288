@@ -93,24 +93,29 @@
 //
 //}
 //
-//void uart_sendChar(char data){
-//	//TODO
-//}
+void uart_sendChar(char data){
+    while(UART1_FR_R & 0x20){}
+
+    UART1_DR_R = data;
+}
 //
 //char uart_receive(void){
 //	//DO NOT USE this busy-wait function if using RX interrupt
 //}
 //
-//void uart_sendStr(const char *data){
-//	//TODO for reference see lcd_puts from lcd.c file
-//}
+void uart_sendStr(const char *data){
+    while(*data != '\0'){
+        uart_sendChar(*data);
+        data++;
+    }
+}
 //
 //// Interrupt handler for receive interrupts
 //void UART1_Handler(void)
 //{
 //    char byte_received;
 //    //check if handler called due to RX event
-//    if (UART1_MIS_R & ?????)
+//    if (UART1_MIS_R & 0x10)
 //    {
 //        //byte was received in the UART data register
 //        //clear the RX trigger flag (clear by writing 1 to ICR)
@@ -118,8 +123,8 @@
 //
 //        //read the byte received from UART1_DR_R and echo it back to PuTTY
 //        //ignore the error bits in UART1_DR_R
-//        byte_received = ?????;
-//        uart_sendChar(?????);
+//        byte_received = UART1_DR_R & 0xFF;
+//        uart_sendChar(byte_received);
 //
 //        //if byte received is a carriage return
 //        if (byte_received == '\r')
