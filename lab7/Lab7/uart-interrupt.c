@@ -18,7 +18,7 @@
 #include "driverlib/interrupt.h"
 
 //// These variables are declared as examples for your use in the interrupt handler.
-volatile char command_byte = 1; // byte value for special character used as a command
+volatile char command_byte = 0; // byte value for special character used as a command
 volatile int command_flag = 0; // flag to tell the main program a special command was received
 
 void uart_interrupt_init(void){
@@ -126,7 +126,7 @@ void UART1_Handler(void)
         //read the byte received from UART1_DR_R and echo it back to PuTTY
         //ignore the error bits in UART1_DR_R
         byte_received = (char)(UART1_DR_R & 0xFF);
-        uart_sendChar(byte_received);
+//        uart_sendChar(byte_received);
 
         //if byte received is a carriage return
         if (byte_received == '\r')
@@ -144,6 +144,9 @@ void UART1_Handler(void)
             if (byte_received == command_byte)
             {
               command_flag = 1;
+            }
+            if(byte_received == 'p'){
+                command_flag = 2;
             }
         }
     }

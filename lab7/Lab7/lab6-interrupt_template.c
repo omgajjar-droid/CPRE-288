@@ -1,5 +1,4 @@
 #include "open_interface.h"
-#include "cyBot_uart.h"
 #include "cyBot_Scan.h"
 #include <stdio.h>
 #include "movement.h"
@@ -8,19 +7,14 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stddef.h>
+#include "uart-interrupt.h"
 
-void cyBot_sendString(char *input) {
- while(*input != '\0') {
-        cyBot_sendByte(*input);
-        input++;
-    }
-}
 float avgIR(int angle, cyBOT_Scan_t *scan_data) {
     float sum = 0;
     int samples = 5;
-
-    for(int i = 0; i < samples; i++) {
-        cyBOT_Scan(angle, scan_data);
+    int i;
+    for(i = 0; i < samples; i++) {
+        cyBOT_Scan(i, scan_data);
         sum += scan_data->IR_raw_val;
     }
 
@@ -28,19 +22,21 @@ float avgIR(int angle, cyBOT_Scan_t *scan_data) {
 }
 
 void detectObject(cyBOT_Scan_t *scan) {
-    int angle;
+    int angle = 0;
 
     int objStart = -1;
     int objEnd = -1;
     int objCount = 0;
-
     float threshold = 50;  
-
+    float ir;
     char buffer[100];
+    cyBOT_Scan(0, scan);
+    uart_sendStr("Scanning...\r\n");
+    while(angle <= 180) {
 
-    for(angle = 0; angle <= 180; angle += 2) {
+            cyBOT_Scan(angle, scan);
 
-        float ir = avgIR(angle, scan);
+            ir = avgIR(angle, scan);
 
         if(ir < threshold && objStart == -1) {
             objStart = angle;
@@ -61,72 +57,44 @@ void detectObject(cyBOT_Scan_t *scan) {
             
             float width = 2 * distance * tan(angleWidth / 2);
 
-            sprintf(buffer,
-                "Obj %d | Angle: %d | Dist: %.2f | Width: %.2f\n",
-                objCount, midAngle, distance, width);
+            sprintf(buffer,"Obj %d | Angle: %d | Dist: %.2f | Width: %.2f\r\n", objCount, midAngle, distance, width);
 
-            cyBot_sendString(buffer);
+            uart_sendStr(buffer);
 
             objCount++;
 
             objStart = -1;
             objEnd = -1;
         }
+        sprintf(buffer, "Angle: %d IR: %.2f\r\n", angle, ir);
+        uart_sendStr(buffer);
+        angle += 2;
     }
+
 }
 
-//int i;
-//bool objDetected = false;
-//int width;
-//int widthEnd;
-//int avg;
-//while(i <= 180) {
-//    if(cyBot_getByte() == 'm') {
-//    cyBOT_Scan(i, getScan);
-//
-//
-//        sprintf(buffer, "%d \r %f \t \n" , i, getScan->sound_dist);
-//        cyBot_sendString(buffer);
-//        printf(buffer);
-//
-//        if (getScan->sound_dist < 30){
-//            objDetected = true;
-//            width = i;
-//
-//            if (getScan->sound_dist > 30){
-//                widthEnd = i;
-//            }
-//        }
-//        avg = widthEnd - width;
-//        //objValue(avg);
-//
-//}
-//
-//}
+
+
 int main(void) {
     timer_init();
     lcd_init();
-    cyBot_uart_init();
-    cyBOT_init_Scan(0b0011);
-    right_calibration_value = 122500;
-     left_calibration_value = 1477000;
+    cyBOT_init_Scan(0b0111);
+    uart_interrupt_init();
+    right_calibration_value = -271250;
+    left_calibration_value = 1477000;
+    command_byte = 'm';
 //    cyBOT_SERVO_cal();
      cyBOT_Scan_t *getScan = calloc(1, sizeof(cyBOT_Scan_t));
-     detectObject(getScan);
-//     char buffer[100];
-//
-//    cyBOT_Scan_t *getScan = calloc(1, sizeof(cyBOT_Scan_t));
+     while(1){
+         if(command_flag == 1){
+             detectObject(getScan);
+             command_flag = 0;
+         }
+         if(command_flag == 2){
+             return 0;
+         }
+     }
 
-//    char buffer[100];
-//    while(1){
-//        char test = (char) cyBot_getByte();
-//
-//    sprintf(buffer, "Got an %c", test);
-//    cyBot_sendString(buffer);
-//    if(cyBot_getByte() == 'p'){
-//        break;
-//    }
-//}
-    return 0;
+
 }
 
