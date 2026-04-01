@@ -1,5 +1,5 @@
 #include "adc.h"
-#include "tm4c123gh6pm.h"
+#include "REF_tm4c123gh6pm.h"
 
 void adc_init(void) {
     SYSCTL_RCGCGPIO_R |= 0x02;  

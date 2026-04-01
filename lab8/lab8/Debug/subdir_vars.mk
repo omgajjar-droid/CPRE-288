@@ -13,6 +13,7 @@ LIB_SRCS += \
 
 C_SRCS += \
 ../Timer.c \
+../adc.c \
 ../lab6-interrupt_template.c \
 ../lcd.c \
 ../movement.c \
@@ -22,6 +23,7 @@ C_SRCS += \
 
 C_DEPS += \
 ./Timer.d \
+./adc.d \
 ./lab6-interrupt_template.d \
 ./lcd.d \
 ./movement.d \
@@ -31,6 +33,7 @@ C_DEPS += \
 
 OBJS += \
 ./Timer.obj \
+./adc.obj \
 ./lab6-interrupt_template.obj \
 ./lcd.obj \
 ./movement.obj \
@@ -40,6 +43,7 @@ OBJS += \
 
 OBJS__QUOTED += \
 "Timer.obj" \
+"adc.obj" \
 "lab6-interrupt_template.obj" \
 "lcd.obj" \
 "movement.obj" \
@@ -49,6 +53,7 @@ OBJS__QUOTED += \
 
 C_DEPS__QUOTED += \
 "Timer.d" \
+"adc.d" \
 "lab6-interrupt_template.d" \
 "lcd.d" \
 "movement.d" \
@@ -58,6 +63,7 @@ C_DEPS__QUOTED += \
 
 C_SRCS__QUOTED += \
 "../Timer.c" \
+"../adc.c" \
 "../lab6-interrupt_template.c" \
 "../lcd.c" \
 "../movement.c" \

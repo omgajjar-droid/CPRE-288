@@ -30,6 +30,7 @@ lab6-interrupt_template.obj: ../movement.h
 lab6-interrupt_template.obj: C:/ti/ccs1271/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/include/stdlib.h
 lab6-interrupt_template.obj: C:/ti/ccs1271/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/include/stddef.h
 lab6-interrupt_template.obj: ../uart-interrupt.h
+lab6-interrupt_template.obj: ../adc.h
 
 ../lab6-interrupt_template.c:
 
@@ -90,4 +91,6 @@ C:/ti/ccs1271/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/include/stdlib.h:
 C:/ti/ccs1271/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/include/stddef.h:
 
 ../uart-interrupt.h:
+
+../adc.h:
 

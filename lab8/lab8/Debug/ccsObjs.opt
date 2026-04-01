@@ -1,4 +1,5 @@
 "./Timer.obj"
+"./adc.obj"
 "./lab6-interrupt_template.obj"
 "./lcd.obj"
 "./movement.obj"
