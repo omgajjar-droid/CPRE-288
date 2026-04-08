@@ -104,8 +104,7 @@ float ping_getDistance (void){
     float distance = 0;
     unsigned long time_difference = 0;
     uint8_t overflow = 0;
-  float time_sec = time_difference / 16000000.0f;cycles → seconds (16 MHz clock)
-distance = (time_sec / 2.0f) * 34000.0f;
+    float time_sec = time_difference / 16000000.0f;
 
        ping_trigger();
 
@@ -121,7 +120,7 @@ distance = (time_sec / 2.0f) * 34000.0f;
 
        time_difference = (g_start_time - g_end_time) + ((uint32_t)overflow << 24);
        time_sec = time_difference / 16000000.0f;
-       distance = (time_sec / 2.0f) * 34000.0f;;
+       distance = (time_sec / 2.0f) * 34000.0f;
 
     return distance;
 }
