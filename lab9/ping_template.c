@@ -57,19 +57,19 @@ void ping_trigger (void){
     TIMER3_CTL_R &= ~0x100;
     TIMER3_IMR_R &= ~0x400;
     // Disable alternate function (disconnect timer from port pin)
-    GPIO_PORTB_AFSEL_R &= 0x08;
+    GPIO_PORTB_AFSEL_R &= ~0x08;
 
     // YOUR CODE HERE FOR PING TRIGGER/START PULSE
     GPIO_PORTB_DIR_R |= 0x08;
     GPIO_PORTB_DATA_R |= 0x08;
-    GPIO_PORTB_DATA_R &= ~0x08;
     timer_waitMicros(5);
+    GPIO_PORTB_DATA_R &= ~0x08;
 
     // Clear an interrupt that may have been erroneously triggered
     TIMER3_ICR_R |=0x400;
     // Re-enable alternate function, timer interrupt, and timer
     GPIO_PORTB_AFSEL_R |=0x08;;
-    TIMER3_IMR_R |= 0x08;
+    TIMER3_IMR_R |= 0x400;
     TIMER3_CTL_R |= 0x100;
 }
 
@@ -91,7 +91,7 @@ void TIMER3B_Handler(void){
                 g_state = HIGH;
             } else if(g_state == HIGH) {
                 g_end_time = TIMER3_TBR_R;
-                g_state = OVER;
+                g_state = DONE;
             }
         }
 }
@@ -105,7 +105,7 @@ float ping_getDistance (void){
 
        ping_trigger();
 
-       while(g_state != OVER){
+       while(g_state != DONE){
 
        }
 

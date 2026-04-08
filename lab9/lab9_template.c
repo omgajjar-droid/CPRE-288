@@ -19,7 +19,6 @@ int main(void) {
 	ping_init();
 
 	// YOUR CODE HERE
-	volatile int i = 0;
 
 	while(1)
 	{
