@@ -12,7 +12,7 @@
 
 volatile uint32_t g_start_time = 0;
 volatile uint32_t g_end_time = 0;
-uint8_t overflowCount = 0;
+volatile uint8_t overflowCount = 0;
 volatile enum{LOW, HIGH, DONE} g_state = LOW; // State of ping echo pulse
 
 void ping_init (void){
@@ -61,9 +61,11 @@ void ping_trigger (void){
 
     // YOUR CODE HERE FOR PING TRIGGER/START PULSE
     GPIO_PORTB_DIR_R |= 0x08;
+    GPIO_PORTB_DATA_R &= ~0x08; 
     GPIO_PORTB_DATA_R |= 0x08;
     timer_waitMicros(5);
     GPIO_PORTB_DATA_R &= ~0x08;
+    GPIO_PORTB_DIR_R &= ~0x08; 
 
     // Clear an interrupt that may have been erroneously triggered
     TIMER3_ICR_R |=0x400;
@@ -102,6 +104,8 @@ float ping_getDistance (void){
     float distance = 0;
     unsigned long time_difference = 0;
     uint8_t overflow = 0;
+  float time_sec = time_difference / 16000000.0f;cycles → seconds (16 MHz clock)
+distance = (time_sec / 2.0f) * 34000.0f;
 
        ping_trigger();
 
@@ -115,8 +119,9 @@ float ping_getDistance (void){
            overflowCount += 1;
        }
 
-       time_difference = (g_start_time - g_end_time) + ((unsigned long) overflow<<24);
-       distance = (time_difference)/1000 + 3;
+       time_difference = (g_start_time - g_end_time) + ((uint32_t)overflow << 24);
+       time_sec = time_difference / 16000000.0f;
+       distance = (time_sec / 2.0f) * 34000.0f;;
 
     return distance;
 }
