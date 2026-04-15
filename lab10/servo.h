@@ -10,6 +10,7 @@
 
 void servo_init(void);
 void servo_move(uint16_t degrees);
+void servo_calibration(void);
 
 
 
