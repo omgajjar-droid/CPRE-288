@@ -13,11 +13,11 @@ volatile uint32_t setting_180;
 volatile uint8_t calibration = 0;
 
 void servo_init(void){
-   SYSCTL_RCGCGPIO_R |= 0x2; //Port B
-   SYSCTL_RCGCTIMER_R |= 0X02; // Timer 1
+   SYSCTL_RCGCGPIO_R |= 0x02; //Port B
+   SYSCTL_RCGCTIMER_R |= 0x02; // Timer 1
 
    while((SYSCTL_PRGPIO_R & 0x02) != 0x02){}; // Checking if Port B is ready
-   while((SYSCTL_PRTIMER_R & 0x08) != 0x02){}; // Checking if Timer 1 is ready
+   while((SYSCTL_PRTIMER_R & 0x02) != 0x02){}; // Checking if Timer 1 is ready
 
   // this is for setting up T1CCP1 on PB5
   GPIO_PORTB_AFSEL_R |= 0x20;
@@ -51,7 +51,7 @@ void servo_move(uint16_t degrees){
         match_period = (match_value_ms / 1000)/0.0000000625;
     }
     else{
-        match_period = (((signed int)(true_180 - true_0))/180) * degrees + true_0;
+        match_period = (((signed int)(setting_180 - setting_0))/180) * degrees + setting_0;
     }
    
     match_shifted = match_period >> 16;
