@@ -7,6 +7,7 @@
 #include "Timer.h"
 #include "lcd.h"
 #include "ping_template.h"
+#include "servo.h"
 
 // Uncomment or add any include directives that are needed
 
@@ -17,28 +18,34 @@ int main(void) {
     timer_init();
     lcd_init();
     ping_init();
+    button_init();
+    servo_init();
 
     // YOUR CODE HERE
-    float distance = 0;
+   /* float distance = 0;
     float pulse_width = 0;
     float pulse_time_ms = 0;
-    float overflow_count = 0;
+    float overflow_count = 0; 
+    */
 
     while(1)
     {
 
-      // YOUR CODE HERE
-        distance = ping_getDistance();
-        pulse_width = getpulseWidth();
-        overflow_count = getOverflow();
+      // YOUR CODE HERE this is only for part 1
+        servo_move(90);
+        lcd_printf("servo at 90 degrees");
+        timer_waitMillis(1500);
+        servo_move(30);
+        lcd_printf("servo at 30 degrees");
+        timer_waitMillis(1500);
+        servo_move(150);
+        lcd_printf("servo at 150 degrees");
+        timer_waitMillis(1500);
+        servo_move(90);
+        lcd_printf("servo at 90 degrees");
+        timer_waitMillis(1500);
 
-
-        pulse_time_ms = pulse_width / 1000;
-
-        lcd_printf("PW:%0.0f cyc\nT:%0.2f ms\nD:%0.2f cm\nOF:%0.0f",
-                   pulse_width, pulse_width_ms, distance, overflow_count);
-
-        timer_waitMillis(200);
+    // there is a button use for part 2
 
     }
 
