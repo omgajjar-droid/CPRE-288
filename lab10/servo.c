@@ -32,23 +32,38 @@ void servo_init(void){
 
   // Set period to 320000 counts, which should go to 20ms at 16MHz
   uint32_t pwm_period = 320000;
-  TIMER1_TBILR_R = pwm_period & 0xFFFF;
-  TIMER1_TBPR_R  = pwm_period >> 16;
-
-  // Set initial position to 90 degrees when equaling 296000
-  uint32_t init_match = 296000;
-  TIMER1_TBMATCHR_R = init_match & 0xFFFF;
-  TIMER1_TBPMR_R    = init_match >> 16;
+  TIMER1_TBILR_R &= 0x0;
+  TIMER1_TBILR_R = pwm_period & 0x0FFFF;
+  TIMER1_TBPR_R &= 0x0;
+  TIMER1_TBPR_R = pwm_period >> 16;
+  TIMER1_TBMATCHR_R &= 0x0;
+  TIMER1_TBPMR_R &= 0x0;
 
     TIMER1_CTL_R |= 0x100; // Enable time
 }
 // rest get the servo to move 
 void servo_move(uint16_t degrees){
-  
+  long match_period;
+  long match_shifted;
+   
+    if(!calibration){
+        float match_value_ms = 20.0 - (degrees/180.0+1.0);
+        match_period = (match_value_ms / 1000)/0.0000000625;
+    }
+    else{
+        match_period = (((signed int)(true_180 - true_0))/180) * degrees + true_0;
+    }
+   
+    match_shifted = match_period >> 16;
+
+    TIMER1_TBMATCHR_R = match_period & 0x0FFFF;
+    TIMER1_TBPMR_R = match_shifted; 
 }
-// this is for calibrating the move, and also makes it so that the button can set the angle
-// this is mainly for parts 2 and 3, I think
+
+// calibrate the servo
 void servo_calibration(void){
-  
+
+   
 }
+  
 
